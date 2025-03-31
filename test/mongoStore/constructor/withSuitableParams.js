@@ -1,7 +1,7 @@
 'use strict';
 
 var expect = require('expect.js');
-var _ = require('underscore');
+var _ = require('lodash');
 var MongoStore = require('../../../lib/mongoStore');
 
 describe('MongoStore with suitable params', function() {
@@ -17,7 +17,8 @@ describe('MongoStore with suitable params', function() {
 			uri: 'testUri',
 			collectionName: 'expressRateRecords',
 			user: 'testUser',
-			password: 'testPassword'
+			password: 'testPassword',
+			authSource: undefined,
 		});
 
 		expect(mongoStore.expireTimeMs).eql(60000);
