@@ -10,17 +10,13 @@ exports.getTestData = function() {
 
 exports.getMocks = function(testData) {
 	var collectionMock = {
-		deleteOne: sinon.stub().callsArgWithAsync(
-			1, testData.deleteOneError
-		)
+		deleteOne: testData.deleteOneReturn
 	};
 
 	return {
 		_dynamic: {
 			mongoStoreContext: {
-				_getCollection: sinon.stub().callsArgWithAsync(
-					0, null, collectionMock
-				),
+				_getCollection: sinon.stub().returns(collectionMock),
 				errorHandler: sinon.stub().returns()
 			},
 			collection: collectionMock

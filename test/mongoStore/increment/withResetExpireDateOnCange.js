@@ -2,15 +2,21 @@
 
 var expect = require('expect.js');
 var rewire = require('rewire');
-var _ = require('underscore');
+var _ = require('lodash');
 var testUtils = require('./utils');
+var sinon = require("sinon");
 
 var MongoStore = rewire('../../../lib/mongoStore');
 
-var describeTitle = 'MongoStore.prototype.incr without resetExpireDateOnChange';
+var describeTitle = 'MongoStore.prototype.incr with resetExpireDateOnChange';
 describe(describeTitle, function() {
 	var testData = testUtils.getTestData();
-	testData.mongoStoreContext.resetExpireDateOnChange = false;
+	var doc = {
+		counter: _.random(1, 10),
+		expirationDate: _.random(1, 10)
+	};
+	testData.collection.findOneAndUpdateResult = sinon.stub().returns(doc);
+	testData.mongoStoreContext.resetExpireDateOnChange = true;
 
 	var mocks = testUtils.getMocks(testData);
 
@@ -18,30 +24,30 @@ describe(describeTitle, function() {
 
 	before(function() {
 		revertMocks = MongoStore.__set__(
-			_(mocks).omit('_dynamic')
+			_.omit(mocks, ['_dynamic'])
 		);
 	});
 
 	it('should return counter and expirationDate', function(done) {
-		MongoStore.prototype.incr.call(
-			_({}).extend(
+		(new MongoStore({collectionName: 'testCollection', uri: 'testUri'})).increment.call(
+			_.extend(
+				{},
 				testData.mongoStoreContext,
 				mocks._dynamic.mongoStoreContext
 			),
 			testData.key,
-			function(err, counter, expirationDate) {
-				revertMocks();
+		).then(data => {
+			revertMocks();
 
-				expect(counter).eql(
-					testData.collection.findOneAndUpdateResult.value.counter
-				);
-				expect(expirationDate).eql(
-					testData.collection.findOneAndUpdateResult.value.expirationDate
-				);
+			expect(data.totalHits).eql(
+				doc.counter
+			);
+			expect(data.resetTime).eql(
+				doc.expirationDate
+			);
 
-				done();
-			}
-		);
+			done();
+		});
 	});
 
 	it('_getCollection should be called', function() {
@@ -52,8 +58,7 @@ describe(describeTitle, function() {
 		var getCollectionArgs = mocks._dynamic.mongoStoreContext
 			._getCollection.args[0];
 
-		expect(getCollectionArgs).length(1);
-		expect(getCollectionArgs[0]).a('function');
+		expect(getCollectionArgs).length(0);
 	});
 
 	it('Date.now should be called', function() {
@@ -86,12 +91,12 @@ describe(describeTitle, function() {
 				.findOneAndUpdate.args[0];
 
 			expect(
-				_(findOneAndUpdateArgs).initial()
+				findOneAndUpdateArgs
 			).eql([
 				{_id: testData.key},
 				{
 					$inc: {counter: 1},
-					$setOnInsert: {
+					$set: {
 						expirationDate: testData.DateResult
 					}
 				},
@@ -100,16 +105,12 @@ describe(describeTitle, function() {
 					returnDocument: 'after'
 				}
 			]);
-
-			expect(
-				_(findOneAndUpdateArgs).last()
-			).a('function');
 		}
 	);
 
 	it('self.incr should not be called', function() {
 		expect(
-			mocks._dynamic.mongoStoreContext.incr.callCount
+			mocks._dynamic.mongoStoreContext.increment.callCount
 		).eql(0);
 	});
 

@@ -1,33 +1,29 @@
 'use strict';
 
 var expect = require('expect.js');
-var Steppy = require('twostep').Steppy;
 var rewire = require('rewire');
-var _ = require('underscore');
+var _ = require('lodash');
 var testUtils = require('./utils');
+const sinon = require("sinon");
 
 var MongoStore = rewire('../../../lib/mongoStore');
 
 var describeTitle = 'MongoStore.prototype.resetKey with suitable params';
 describe(describeTitle, function() {
 	var testData = testUtils.getTestData();
+	testData.deleteOneReturn = sinon.stub().returns(true);
 
 	var mocks = testUtils.getMocks(testData);
 
 	it('should be ok', function(done) {
-		Steppy(
-			function() {
-				MongoStore.prototype.resetKey.call(
-					_({}).extend(
-						testData.mongoStoreContext,
-						mocks._dynamic.mongoStoreContext
-					),
-					testData.key,
-					this.slot()
-				);
-			},
-			done
-		);
+		(new MongoStore({collectionName: 'testCollection', uri: 'testUri'})).resetKey.call(
+			_.extend(
+				{},
+				testData.mongoStoreContext,
+				mocks._dynamic.mongoStoreContext
+			),
+			testData.key,
+		).then(_ => done());
 	});
 
 	it('_getCollection should be called', function() {
@@ -38,8 +34,7 @@ describe(describeTitle, function() {
 		var getCollectionArgs = mocks._dynamic.mongoStoreContext
 			._getCollection.args[0];
 
-		expect(getCollectionArgs).length(1);
-		expect(getCollectionArgs[0]).a('function');
+		expect(getCollectionArgs).length(0);
 	});
 
 	it(
@@ -52,14 +47,10 @@ describe(describeTitle, function() {
 			var deleteOneArgs = mocks._dynamic.collection.deleteOne.args[0];
 
 			expect(
-				_(deleteOneArgs).initial()
+				deleteOneArgs
 			).eql([
 				{_id: testData.key}
 			]);
-
-			expect(
-				_(deleteOneArgs).last()
-			).a('function');
 		}
 	);
 

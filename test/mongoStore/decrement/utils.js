@@ -1,7 +1,7 @@
 'use strict';
 
 var sinon = require('sinon');
-var _ = require('underscore');
+var _ = require('lodash');
 
 exports.getTestData = function() {
 	return {
@@ -13,12 +13,10 @@ exports.getTestData = function() {
 			nowResult: _.random(1, 10)
 		},
 		collection: {
-			findOneAndUpdateResult: {
-				value: {
-					counter: _.random(1, 10),
-					expirationDate: _.random(1, 10)
-				}
-			}
+			findOneAndUpdateResult: sinon.stub().returns({
+				counter: _.random(1, 10),
+				expirationDate: _.random(1, 10),
+			})
 		},
 		mongoStoreContext: {
 			expireTimeMs: _.random(1, 10)
@@ -28,15 +26,12 @@ exports.getTestData = function() {
 
 exports.getMocks = function(testData) {
 	var dateMock = sinon.stub().callsFake(function() {
-		_(this).extend(testData.DateResult);
+		_.extend(this, testData.DateResult);
 	});
 	dateMock.now = sinon.stub().returns(testData.Date.nowResult);
 
-	var collectionFindOneAndUpdateMock = sinon.stub().callsArgWithAsync(
-		3,
-		testData.findOneAndUpdateError,
-		testData.collection.findOneAndUpdateResult
-	);
+	var collectionFindOneAndUpdateMock =
+		testData.collection.findOneAndUpdateResult;
 	var collectionMock = {
 		findOneAndUpdate: collectionFindOneAndUpdateMock
 	};
@@ -45,9 +40,7 @@ exports.getMocks = function(testData) {
 		Date: dateMock,
 		_dynamic: {
 			mongoStoreContext: {
-				_getCollection: sinon.stub().callsArgWithAsync(
-					0, null, collectionMock
-				),
+				_getCollection: sinon.stub().returns(collectionMock),
 				errorHandler: sinon.stub().returns()
 			},
 			collection: collectionMock

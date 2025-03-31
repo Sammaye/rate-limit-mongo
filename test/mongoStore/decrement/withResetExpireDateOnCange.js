@@ -1,9 +1,8 @@
 'use strict';
 
 var expect = require('expect.js');
-var Steppy = require('twostep').Steppy;
 var rewire = require('rewire');
-var _ = require('underscore');
+var _ = require('lodash');
 var testUtils = require('./utils');
 
 var MongoStore = rewire('../../../lib/mongoStore');
@@ -20,24 +19,19 @@ describe(describeTitle, function() {
 
 	before(function() {
 		revertMocks = MongoStore.__set__(
-			_(mocks).omit('_dynamic')
+			_.omit(mocks, ['_dynamic'])
 		);
 	});
 
-	it('should be ok', function(done) {
-		Steppy(
-			function() {
-				MongoStore.prototype.decrement.call(
-					_({}).extend(
-						testData.mongoStoreContext,
-						mocks._dynamic.mongoStoreContext
-					),
-					testData.key,
-					this.slot()
-				);
-			},
-			done
-		);
+	it('should be ok', function (done) {
+		(new MongoStore({collectionName: 'testCollection', uri: 'testUri'})).decrement.call(
+			_.extend(
+				{},
+				testData.mongoStoreContext,
+				mocks._dynamic.mongoStoreContext
+			),
+			testData.key,
+		).then(_ => done());
 	});
 
 	it('_getCollection should be called', function() {
@@ -48,8 +42,7 @@ describe(describeTitle, function() {
 		var getCollectionArgs = mocks._dynamic.mongoStoreContext
 			._getCollection.args[0];
 
-		expect(getCollectionArgs).length(1);
-		expect(getCollectionArgs[0]).a('function');
+		expect(getCollectionArgs).length(0);
 	});
 
 	it('Date.now should be called', function() {
@@ -82,7 +75,7 @@ describe(describeTitle, function() {
 				.findOneAndUpdate.args[0];
 
 			expect(
-				_(findOneAndUpdateArgs).initial()
+				findOneAndUpdateArgs
 			).eql([
 				{_id: testData.key},
 				{
@@ -96,10 +89,6 @@ describe(describeTitle, function() {
 					returnDocument: 'after'
 				}
 			]);
-
-			expect(
-				_(findOneAndUpdateArgs).last()
-			).a('function');
 		}
 	);
 
