@@ -1,5 +1,7 @@
 # Rate Limit Mongo
 
+**This is an updated version designed to work with the latest rate limit library and be fully compatible with modern async workflows**
+
 MongoDB store for the [express-rate-limit](https://github.com/nfriedly/express-rate-limit) middleware.
 
 [![Npm version](https://img.shields.io/npm/v/rate-limit-mongo.svg)](https://www.npmjs.org/package/rate-limit-mongo)
