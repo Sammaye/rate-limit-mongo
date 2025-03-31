@@ -4,7 +4,7 @@ var expect = require('expect.js');
 var Steppy = require('twostep').Steppy;
 var rewire = require('rewire');
 var _ = require('underscore');
-var testUtils = require('./utils');
+var testUtils = require('../../test/mongoStore/_getCollection/utils');
 
 var MongoStore = rewire('../../../lib/mongoStore');
 

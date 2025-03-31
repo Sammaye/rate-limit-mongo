@@ -8,18 +8,20 @@ exports.getTestData = function() {
 			dbOptions: {
 				uri: 'testUri/testDbName',
 				collectionName: 'testCollectionName'
-			}
+			},
+			connectionOptions: {},
 		},
 		db: {
 			collectionResult: 'testCollection'
+		},
+		collection: {
+			createIndex: sinon.stub()
 		}
 	};
 };
 
 exports.getMocks = function(testData) {
-	var dbCollectionMock = sinon.stub().returns(
-		testData.db.collectionResult
-	);
+	var dbCollectionMock = sinon.stub().returns(testData.collection);
 
 	var clientDbMock = sinon.stub().returns({
 		collection: dbCollectionMock
@@ -31,9 +33,7 @@ exports.getMocks = function(testData) {
 
 	return {
 		MongoClient: {
-			connect: sinon.stub().callsArgWithAsync(
-				2, null, mongoClientConnectResult
-			)
+			connect: sinon.stub().returns(mongoClientConnectResult)
 		},
 		_dynamic: {
 			db: {
