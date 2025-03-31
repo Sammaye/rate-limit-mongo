@@ -9,6 +9,7 @@
     "type": "git",
     "url": "git@github.com:Sammaye/rate-limit-mongo.git"
   },
+  "types": "lib/index.d.ts",
   "keywords": [
     "express-rate-limit",
     "express",
