@@ -8,7 +8,7 @@ var testUtils = require('./utils');
 
 var MongoStore = rewire('../../../lib/mongoStore');
 
-var describeTitle = 'MongoStore.prototype.incr with ' +
+var describeTitle = 'MongoStore.increment with ' +
 	'findOneAndUpdate duplicate key error';
 describe(describeTitle, function() {
 	var testData = testUtils.getTestData();

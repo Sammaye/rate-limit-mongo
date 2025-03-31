@@ -8,7 +8,7 @@ var sinon = require("sinon");
 
 var MongoStore = rewire('../../../lib/mongoStore');
 
-var describeTitle = 'MongoStore.prototype.incr with resetExpireDateOnChange';
+var describeTitle = 'MongoStore.increment with resetExpireDateOnChange';
 describe(describeTitle, function() {
 	var testData = testUtils.getTestData();
 	var doc = {

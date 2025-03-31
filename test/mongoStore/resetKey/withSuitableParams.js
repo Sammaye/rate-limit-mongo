@@ -8,7 +8,7 @@ const sinon = require("sinon");
 
 var MongoStore = rewire('../../../lib/mongoStore');
 
-var describeTitle = 'MongoStore.prototype.resetKey with suitable params';
+var describeTitle = 'MongoStore.resetKey with suitable params';
 describe(describeTitle, function() {
 	var testData = testUtils.getTestData();
 	testData.deleteOneReturn = sinon.stub().returns(true);

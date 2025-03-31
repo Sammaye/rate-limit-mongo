@@ -7,7 +7,7 @@ var testUtils = require('./utils');
 
 var MongoStore = rewire('../../../lib/mongoStore');
 
-var describeTitle = 'MongoStore.prototype.decrement ' +
+var describeTitle = 'MongoStore.decrement ' +
 	'with resetExpireDateOnChange';
 describe(describeTitle, function() {
 	var testData = testUtils.getTestData();

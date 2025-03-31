@@ -8,7 +8,7 @@ const sinon = require("sinon");
 
 var MongoStore = rewire('../../../lib/mongoStore');
 
-var describeTitle = 'MongoStore.prototype.incr with findOneAndUpdate error';
+var describeTitle = 'MongoStore.increment with findOneAndUpdate error';
 describe(describeTitle, function() {
 	var testData = testUtils.getTestData();
 	testData.findOneAndUpdateError = new Error();

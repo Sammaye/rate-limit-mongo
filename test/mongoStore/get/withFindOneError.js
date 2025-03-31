@@ -8,26 +8,32 @@ var testUtils = require('./utils');
 
 var MongoStore = rewire('../../../lib/mongoStore');
 
-var describeTitle = 'MongoStore.resetKey ' +
-	'with deleteOne error';
+var describeTitle = 'MongoStore.get with findOne error';
 describe(describeTitle, function() {
 	var testData = testUtils.getTestData();
-	testData.deleteOneError = new Error();
-	testData.deleteOneReturn = sinon.stub().throws(testData.deleteOneError);
+	var findOneError = new Error();
+	testData.collection.findOneResult = sinon.stub().throws(findOneError);
 
 	var mocks = testUtils.getMocks(testData);
 
-	it('should throw error', function(done) {
-		(new MongoStore({collectionName: 'testCollection', uri: 'testUri'})).resetKey.call(
+	var revertMocks;
+
+	before(function() {
+		revertMocks = MongoStore.__set__(
+			_.omit(mocks, ['_dynamic'])
+		);
+	});
+
+	it('should throw error in callback', function(done) {
+		(new MongoStore({collectionName: 'testCollection', uri: 'testUri'})).get.call(
 			_.extend(
 				{},
 				testData.mongoStoreContext,
 				mocks._dynamic.mongoStoreContext
 			),
 			testData.key,
-		).catch((err) => {
-			expect(err).eql(testData.deleteOneError);
-
+		).catch(err => {
+			expect(err).eql(findOneError);
 			done();
 		});
 	});
@@ -43,23 +49,6 @@ describe(describeTitle, function() {
 		expect(getCollectionArgs).length(0);
 	});
 
-	it(
-		'collection.deleteOne should be called for deleting record',
-		function() {
-			expect(
-				mocks._dynamic.collection.deleteOne.callCount
-			).eql(1);
-
-			var deleteOneArgs = mocks._dynamic.collection.deleteOne.args[0];
-
-			expect(
-				deleteOneArgs
-			).eql([
-				{_id: testData.key}
-			]);
-		}
-	);
-
 	it('errorHandler should be called with error', function() {
 		expect(
 			mocks._dynamic.mongoStoreContext.errorHandler.callCount
@@ -69,7 +58,11 @@ describe(describeTitle, function() {
 			.args[0];
 
 		expect(errorHandlerArgs).eql([
-			testData.deleteOneError
+			findOneError
 		]);
+	});
+
+	after(function() {
+		revertMocks();
 	});
 });
