@@ -1,5 +1,5 @@
 {
-  "name": "rate-limit-mongo",
+  "name": "@sammaye/rate-limit-mongo",
   "description": "Provides a Mongo store for the express-rate-limit middleware.",
   "version": "1.0.0",
   "author": "2do2go team <dev.2do2go@gmail.com>",
@@ -8,6 +8,9 @@
   "repository": {
     "type": "git",
     "url": "git@github.com:Sammaye/rate-limit-mongo.git"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "types": "lib/index.d.ts",
   "keywords": [
