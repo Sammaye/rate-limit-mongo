@@ -10,6 +10,7 @@ exports.getTestData = function() {
 				collectionName: 'testCollectionName'
 			},
 			connectionOptions: {},
+			createTtlIndex: true,
 		},
 		db: {
 			collectionResult: 'testCollection'
