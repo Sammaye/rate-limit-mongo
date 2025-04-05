@@ -1,6 +1,6 @@
 import { MongoClientOptions, Collection } from 'mongodb';
 
-declare module 'rate-limit-mongo' {
+declare module '@sammaye/rate-limit-mongo' {
 
     export default class MongoStore {
 
