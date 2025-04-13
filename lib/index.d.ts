@@ -1,4 +1,4 @@
-import { MongoClientOptions, Collection } from 'mongodb';
+import {MongoClientOptions, Collection, MongoClient} from 'mongodb';
 
 declare module '@sammaye/rate-limit-mongo' {
 
@@ -40,6 +40,8 @@ declare module '@sammaye/rate-limit-mongo' {
          * Resets every value
          */
         resetAll(): void;
+
+        getClient(): MongoClient;
     }
 
     export interface MongoStoreRateLimitRecord {
@@ -48,6 +50,11 @@ declare module '@sammaye/rate-limit-mongo' {
     }
 
     export interface MongoStoreOptions {
+
+        /**
+         * mongodb client instance. Required if uri hasn't been set.
+         */
+        client?: MongoClient;
 
         /**
          * uri for connecting to mongodb, `mongodb://127.0.0.1:27017/test_db` for example. Required if collection hasn't been set.
