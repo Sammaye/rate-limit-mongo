@@ -12,7 +12,7 @@ describe('MongoStore without collection and collectionName', function() {
 			});
 		}).throwException(function(err) {
 			expect(err.message).eql(
-				'collection or collectionName and uri should be set'
+				'collection/client or collectionName and uri should be set'
 			);
 		});
 	});
